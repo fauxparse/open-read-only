@@ -1,0 +1,69 @@
+{
+  "name": "open-read-only",
+  "displayName": "Open Read-Only",
+  "version": "0.0.1",
+  "description": "Automatically opens configured files in read-only editor buffers.",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "files",
+    "glob",
+    "read-only",
+    "readonly"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fauxparse/open-read-only"
+  },
+  "publisher": "fauxparse",
+  "main": "./out/extension.js",
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('out', { recursive: true, force: true })\"",
+    "bundle": "esbuild ./src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=out/extension.js",
+    "compile": "npm run clean && npm run typecheck && npm run bundle",
+    "package": "vsce package --no-dependencies --allow-missing-repository",
+    "vsix": "pnpm run compile && pnpm exec vsce package --no-dependencies",
+    "publish:ovsx": "pnpm run vsix && node scripts/publish-ovsx.cjs",
+    "typecheck": "tsc -p . --noEmit",
+    "vscode:prepublish": "pnpm run compile",
+    "watch": "tsc -watch -p . --noEmit",
+    "test": "vitest run",
+    "check": "pnpm run compile && pnpm run test && pnpm run package -- --out /tmp/open-read-only-smoke.vsix"
+  },
+  "dependencies": {
+    "minimatch": "^10.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.9.1",
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Open Read Only",
+      "properties": {
+        "openReadOnly.patterns": {
+          "type": "array",
+          "scope": "resource",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Glob patterns for files that should automatically open as read-only. Patterns are merged across user, workspace, and workspace-folder settings."
+        }
+      }
+    }
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "icon": "media/open-read-only-icon.png",
+  "engines": {
+    "vscode": "^1.90.0"
+  }
+}

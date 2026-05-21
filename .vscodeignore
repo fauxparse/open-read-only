@@ -1,0 +1,10 @@
+node_modules/**
+src/**
+test/**
+.vscode/**
+*.ts
+*.map
+tsconfig.json
+vitest.config.ts
+package-lock.json
+out/**/*.map
